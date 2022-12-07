@@ -32,6 +32,10 @@ const Navbar = () => {
 			url: '/student'
 		},
 		{
+			label: 'Academics',
+			url: '/student/academics'
+		},
+		{
 			label: 'Update Profile',
 			url: '/student/update-profile'
 		},
@@ -102,7 +106,7 @@ const Navbar = () => {
 				{/* <img src="/assets/sigce.png" className='h-12 mr-20' alt="" /> */}
 				{
 					routes.map((route) => {
-						return <Link key={route.url} href={route.url}><p>{route.label}</p></Link>
+						return <Link className='p-2 bg-indigo-600 hover:bg-indigo-400 duration-200 rounded-lg w-10/12 text-white font-semibold text-center my-2' key={route.url} href={route.url}><p>{route.label}</p></Link>
 					})
 				}
 				<Button text={"Logout"} handler={logOut} />

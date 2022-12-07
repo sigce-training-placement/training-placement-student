@@ -2,7 +2,7 @@ import React from 'react'
 import { Calendar } from 'react-calendar'
 import 'react-calendar/dist/Calendar.css';
 
-const CustomCalendar = ({ onChange, value, className, showCalendar }) => {
+const CustomCalendar = ({ onChange, value="1-3-2000", className, showCalendar }) => {
 	return (
 		<>
 			<div className={showCalendar ? 'h-max w-max absolute top-0 left-0' : "hidden"}>

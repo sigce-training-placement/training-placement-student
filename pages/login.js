@@ -30,7 +30,7 @@ const Login = ({ setMessage }) => {
 
 	return (
 		<>
-			<Layout title={'Login'} className={'flex items-center'}>
+			<Layout title={'Login'} className={'flex items-center justify-center'}>
 				<div className='w-7/12 bg-white rounded-xl px-10 py-5 m-auto shadow-lg'>
 					<h1 className='text-center font-bold text-3xl mb-5'>Login</h1>
 					<div>

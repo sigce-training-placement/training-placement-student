@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { useRouter } from 'next/router'
 import { auth, db } from '../context/firebase_config'
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, sendEmailVerification } from "firebase/auth";
 import { doc, setDoc } from 'firebase/firestore'
 import Input from '../components/Input'
 import Layout from '../components/Layout'
@@ -26,6 +26,7 @@ const StudentSignup = ({ setMessage }) => {
 					await setDoc(doc(db, "users", user.uid), {
 						email: user.email,
 						regno: user.email.split('@')[0],
+						dse: user.email.split('@')[0].match(/d\b/) ? true : false,
 						uid: user.uid,
 						role: 'student'
 					})
@@ -34,7 +35,7 @@ const StudentSignup = ({ setMessage }) => {
 							sendEmailVerification(auth.currentUser)
 							.then(() => {
 									setMessage('Verification Email sent! Do check your spam section')
-									router.push('/student/update-profile?redirect=true')
+									// router.push('/student/update-profile?redirect=true')
 								});
 						})
 				})

@@ -15,11 +15,20 @@ const Layout = ({ children, className, title, setMessage }) => {
 		}
 	}, [user]);
 
+	
+	useEffect(() => {
+		if (userData && !userData.firstname) {
+			router.push("/student/update-profile?redirect=true")
+		} else {
+			return 
+		}
+	}, [userData]);
+
 
 	return (
 		<>
 			<PageHead title={title} />
-			<div className={user && user.emailVerified ? `bg-color h-screen w-10/12 absolute top-0 position-right ${className}` : "bg-color h-screen w-screen"}>
+			<div className={user && user.emailVerified ? `bg-color h-screen w-10/12 absolute top-0 position-right ${className}` : "bg-color h-screen w-screen flex items-center justify-center"}>
 				{children}
 			</div>
 		</>

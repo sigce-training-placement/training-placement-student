@@ -10,7 +10,7 @@ import Select from '../../components/Select'
 import CustomCalendar from '../../components/CustomCalendar'
 
 const UpdateProfile = ({ setMessage, getDate }) => {
-	const { userData, user } = useUserAuth()
+	const { userData, user, YEAR_OPTIONS, BRANCH_OPTIONS, GENDER_OPTIONS } = useUserAuth()
 	const [loading, setLoading] = useState(false)
 	const [displayCalender, setDisplayCalender] = useState(false)
 	const [dateofbirth, setDateofbirth] = useState(getDate("normal"));
@@ -23,6 +23,7 @@ const UpdateProfile = ({ setMessage, getDate }) => {
 		branch: "",
 		location: "",
 		gender: "",
+		year: ""
 	}
 	const [formState, setFormState] = useState(initialState);
 
@@ -44,7 +45,7 @@ const UpdateProfile = ({ setMessage, getDate }) => {
 		if (user) {
 			setLoading(true)
 			const docRef = doc(db, "users", user && user.uid);
-			await updateDoc(docRef, {...formState, dateofbirth})
+			await updateDoc(docRef, { ...formState, dateofbirth })
 				.then(() => {
 					setLoading(false)
 					const queryString = window.location.search;
@@ -61,46 +62,9 @@ const UpdateProfile = ({ setMessage, getDate }) => {
 		}
 	}
 
-	const GENDER_OPTIONS = [
-		{
-			label: "Male",
-			value: "male"
-		},
-		{
-			label: "Female",
-			value: "female"
-		},
-		{
-			label: "Transgender",
-			value: "transgender"
-		}
-	]
-	const BRANCH_OPTIONS = [
-		{
-			label: "COMPUTER",
-			value: "computer"
-		},
-		{
-			label: "AI-ML",
-			value: "ai-ml"
-		},
-		{
-			label: "IOT",
-			value: "iot"
-		},
-		{
-			label: "MECHANICAL",
-			value: "mechanical"
-		},
-		{
-			label: "ELECTRICAL",
-			value: "electrical"
-		}
-	]
-
 	const handleDateChange = (e) => {
 		const date = new Date(e)
-		setDateofbirth(`${date.getFullYear()}-${date.getMonth()+1 <=9 ? `0${date.getMonth()+1}`: `${date.getMonth()+1}`}-${date.getDate() <= 9 ? `0${date.getDate()}` : `${date.getDate()}` }`)
+		setDateofbirth(`${date.getFullYear()}-${date.getMonth() + 1 <= 9 ? `0${date.getMonth() + 1}` : `${date.getMonth() + 1}`}-${date.getDate() <= 9 ? `0${date.getDate()}` : `${date.getDate()}`}`)
 		setDisplayCalender(false)
 	}
 	return (
@@ -117,11 +81,14 @@ const UpdateProfile = ({ setMessage, getDate }) => {
 						<Input label={"Registration Number"} placeholder={"Enter Your Registration Number"} readOnly={true} id="regno" value={userData && userData.regno} />
 						<Input label={"Mobile Number"} placeholder={"Enter Your Mobile Number"} id="mobileno" type='number' value={formState.mobileno} changeHandler={handleChange} />
 						<Select label={"Gender"} placeholder={"Select Your Gender"} id="gender" value={formState.gender} changeHandler={handleChange} options={GENDER_OPTIONS} selected={"-- Select --"} />
-						<Select label={"Branch"} placeholder={"Select Your Branch"} id="branch" value={formState.branch} changeHandler={handleChange} options={BRANCH_OPTIONS} selected={"-- Select --"} />
+						<div className='grid grid-cols-2 gap-x-6'>
+							<Select label={"Year"} placeholder={"Select Your Year"} id="year" value={formState.year} changeHandler={handleChange} options={YEAR_OPTIONS} selected={"-- Select --"} />
+							<Select label={"Branch"} placeholder={"Select Your Branch"} id="branch" value={formState.branch} changeHandler={handleChange} options={BRANCH_OPTIONS} selected={"-- Select --"} />
+						</div>
 						<div className={'flex flex-col '}>
 							<label htmlFor={"dob"} className=' mb-1 font-semibold cursor-pointer'>{"Date Of Birth"}: </label>
-						<div className='relative -top-10'><CustomCalendar showCalendar={displayCalender} onChange={handleDateChange} value={dateofbirth} /></div>
-							<input onFocus={() => {setDisplayCalender(true)}} readOnly value={dateofbirth} name={"dob"} id={"dob"} className={'Montserrat read-only:cursor-pointer disabled:cursor-not-allowed focus:border-indigo-500 duration-300 border-2 rounded-lg outline-none px-4 py-3 focus:bg-indigo-50'} type={"text"} />
+							<div className='relative -top-10'><CustomCalendar showCalendar={displayCalender} onChange={handleDateChange} value={dateofbirth} /></div>
+							<input onFocus={() => { setDisplayCalender(true) }} readOnly value={dateofbirth} name={"dob"} id={"dob"} className={'Montserrat read-only:cursor-pointer disabled:cursor-not-allowed focus:border-indigo-500 duration-300 border-2 rounded-lg outline-none px-4 py-3 focus:bg-indigo-50'} type={"text"} />
 						</div>
 						<Input label={"Location"} placeholder={"Enter Your Current Location"} id="location" type='text' value={formState.location} changeHandler={handleChange} />
 					</div>
