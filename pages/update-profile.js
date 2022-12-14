@@ -1,13 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/router'
-import { db } from '../../context/firebase_config'
-import { useUserAuth } from '../../context/auth'
+import { db } from '../context/firebase_config'
+import { useUserAuth } from '../context/auth'
 import { doc, updateDoc } from 'firebase/firestore'
-import Button from '../../components/Button'
-import Input from '../../components/Input'
-import Layout from '../../components/Layout'
-import Select from '../../components/Select'
-import CustomCalendar from '../../components/CustomCalendar'
+import Button from '../components/Button'
+import Input from '../components/Input'
+import Layout from '../components/Layout'
+import Select from '../components/Select'
+import CustomCalendar from '../components/CustomCalendar'
 
 const UpdateProfile = ({ setMessage, getDate }) => {
 	const { userData, user, YEAR_OPTIONS, BRANCH_OPTIONS, GENDER_OPTIONS } = useUserAuth()
@@ -23,7 +23,7 @@ const UpdateProfile = ({ setMessage, getDate }) => {
 		branch: "",
 		location: "",
 		gender: "",
-		year: ""
+		year: 1
 	}
 	const [formState, setFormState] = useState(initialState);
 
@@ -35,10 +35,16 @@ const UpdateProfile = ({ setMessage, getDate }) => {
 	}, [userData]);
 
 	const handleChange = (e) => {
-		setFormState({
-			...formState,
-			[e.target.name]: e.target.value
-		})
+		if (e.target.name === "year") {
+			setFormState({
+				...formState, year: Number(e.target.value)
+			})
+		} else {
+			setFormState({
+				...formState,
+				[e.target.name]: e.target.value
+			})
+		}
 	}
 
 	const updateProfile = async () => {
@@ -53,7 +59,7 @@ const UpdateProfile = ({ setMessage, getDate }) => {
 					const redirect = urlParams.get('redirect')
 					if (redirect) {
 						setTimeout(() => {
-							router.push('/student/club?redirect=true')
+							router.push('/club?redirect=true')
 						}, 400)
 					} else {
 						setMessage("Profile Updated Successfully!");
@@ -69,7 +75,7 @@ const UpdateProfile = ({ setMessage, getDate }) => {
 	}
 	return (
 		<>
-			<Layout title={'Update Profile'} className="flex items-center">
+			<Layout title={'Update Profile'} className="flex items-center" navbar={true}>
 				<form className='m-auto w-11/12 bg-white rounded-xl shadow-lg px-6 py-10'>
 					<h1 className='text-center font-bold text-3xl mb-5'>Update Profile</h1>
 					<div className='grid grid-cols-2 gap-x-10 gap-y-5'>

@@ -5,6 +5,9 @@ import { UserAuthContextProvider } from '../context/auth'
 import '../styles/globals.css'
 import '../styles/style.css'
 import moment from 'moment'
+import { UserDataContextProvider } from '../context/data'
+import NoticeModal from '../components/NoticeModal'
+import { auth } from '../context/firebase_config'
 
 function MyApp({ Component, pageProps }) {
   const [message, setMessage] = useState("")
@@ -44,21 +47,39 @@ function MyApp({ Component, pageProps }) {
     }
   }
 
-  const getDate = (format) => {
+  const getDate = (format, date) => {
     const dateObj = new Date();
     if (format === undefined) {
       return `Today, ${moment(dateObj).format("DD MMM YYYY")}`
-    } else if(format === "normal"){
+    } else if (format === "normal") {
       return `${dateObj.getFullYear()}-${dateObj.getMonth() + 1}-${dateObj.getDate()}`
+    } else if (format === "drive") {
+      let newDate = new Date()
+      newDate.setDate(date?.split("-")[2])
+      newDate.setMonth(Number(date?.split("-")[1]) - 1)
+      newDate.setFullYear(Number(date?.split("-")[0]))
+      return `${moment(newDate).format("Do MMM, YYYY")}`
     }
   }
 
+  useEffect(() => {
+    window.addEventListener('contextmenu', (e) => {
+      e.preventDefault()
+    })
+    return () => {
+      window.removeEventListener('contextmenu', (e) => {
+        e.preventDefault()
+      })
+    };
+  }, []);
   return (
     <>
       <UserAuthContextProvider setMessage={setMessage}>
-        <Alert message={message} />
-        <Navbar />
-        <Component {...pageProps} setMessage={setMessage} yearArray={yearArray} getDate={getDate} showLargeModal={showLargeModal} setShowLargeModal={setShowLargeModal} />
+        <UserDataContextProvider>
+          <Alert message={message} />
+          {/* <Navbar /> */}
+          <Component {...pageProps} setMessage={setMessage} yearArray={yearArray} getDate={getDate} showLargeModal={showLargeModal} setShowLargeModal={setShowLargeModal} />
+        </UserDataContextProvider>
       </UserAuthContextProvider>
     </>
   )

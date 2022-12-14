@@ -1,24 +1,26 @@
 import React, { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
-import { db, storage } from '../../context/firebase_config'
-import { useUserAuth } from '../../context/auth'
+import { db, storage } from '../context/firebase_config'
+import { useUserAuth } from '../context/auth'
 import { addDoc, doc, updateDoc, collection, query, where, onSnapshot } from 'firebase/firestore'
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { FiUpload } from 'react-icons/fi'
-import Select from '../../components/Select'
-import Button from '../../components/Button'
-import Input from '../../components/Input'
-import Layout from '../../components/Layout'
-import ClubCard from '../../components/ClubCard'
+import Select from '../components/Select'
+import Button from '../components/Button'
+import Input from '../components/Input'
+import Layout from '../components/Layout'
+import ClubCard from '../components/ClubCard'
+import { useUserData } from '../context/data'
 
 export default function StudentInternship({ setMessage, yearArray }) {
-	const { userData, user } = useUserAuth()
+	const { user } = useUserAuth()
 	const [loading, setLoading] = useState(false)
 	const [redirect, setRedirect] = useState(false)
 	const [progress, setProgress] = useState(0)
 	const [certificateURL, setCertificateURL] = useState("")
 	const [file, setFile] = useState()
 	const router = useRouter()
+	const { internships } = useUserData()
 
 	const initialState = {
 		name: "",
@@ -58,25 +60,6 @@ export default function StudentInternship({ setMessage, yearArray }) {
 			[e.target.name]: e.target.value
 		})
 	}
-	const [internshipArr, setInternshipArr] = useState([]);
-
-	useEffect(() => {
-		if (user) {
-			const q = query(collection(db, "student-internship"), where("uid", "==", user.uid));
-			const unsubscribe = onSnapshot(q, (querySnapshot) => {
-				const arr = [];
-				querySnapshot.forEach((doc) => {
-					let obj = doc.data()
-					obj.id = doc.id
-					arr.push(obj);
-				});
-				setInternshipArr(arr);
-			});
-			return () => {
-				unsubscribe()
-			};
-		}
-	}, [user]);
 
 	const handleFileUpload = (e) => {
 		if (formState.name.length != 0) {
@@ -113,7 +96,7 @@ export default function StudentInternship({ setMessage, yearArray }) {
 
 	return (
 		<>
-			<Layout title={'Internship Details'} className="flex items-center">
+			<Layout title={'Internship Details'} className="flex items-center" navbar={true}>
 				<form className='m-auto w-11/12 bg-white rounded-xl shadow-lg px-6 py-6 form-custom-height-parent-internship h-5/6 overflow-hidden'>
 					<h1 className='text-center font-bold text-3xl mb-5'>Internship</h1>
 					<div className='grid grid-cols-2 gap-x-6 form-custom-height-internship overflow-hidden'>
@@ -132,7 +115,7 @@ export default function StudentInternship({ setMessage, yearArray }) {
 						</div>
 						<div className='flex flex-col gap-y-6 py-1 overflow-y-scroll'>
 							{
-								internshipArr.length == 0 ? <h1 className='mt-5 text-xl font-bold text-center'>No results found!</h1> : internshipArr.map((internship, index) => {
+								internships.length == 0 ? <h1 className='mt-5 text-xl font-bold text-center'>No results found!</h1> : internships.map((internship, index) => {
 									return <ClubCard data={internship} key={internship.name + index} index={index} />
 								})
 							}
@@ -140,9 +123,9 @@ export default function StudentInternship({ setMessage, yearArray }) {
 					</div>
 					<div className={redirect ? 'grid grid-cols-2 gap-x-6' : 'grid grid-cols-1 gap-x-6'}>
 						<Button disabled={progress != 100 || progress == 0} loading={loading} text={"Add"} className={"w-full mt-6"} handler={handleSubmit} />
-						{redirect && <Button loading={loading} text={"Next"} className={"w-full mt-6"} handler={() => { router.push('/student/achievement?redirect=true') }} />}
+						{redirect && <Button loading={loading} text={"Next"} className={"w-full mt-6"} handler={() => { router.push('/achievement?redirect=true') }} />}
 					</div>
-					{redirect && <p className='mt-3 text-center'><b className='cursor-pointer' onClick={() => { router.push('/student/achievement?redirect=true') }}>Click here</b> if you haven't completed an internship</p>}
+					{redirect && <p className='mt-3 text-center'><b className='cursor-pointer' onClick={() => { router.push('/achievement?redirect=true') }}>Click here</b> if you haven't completed an internship</p>}
 				</form>
 			</Layout>
 		</>

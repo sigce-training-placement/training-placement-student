@@ -14,28 +14,38 @@ export function UserAuthContextProvider({ children, setMessage }) {
 	const [user, setUser] = useState();
 	const [userData, setUserData] = useState();
 	const [profileCompleted, setProfileCompleted] = useState(false)
+	const [showNotice, setShowNotice] = useState(false)
 
 	const logOut = (url) => {
 		signOut(auth)
 			.then(() => {
 				setUser()
 				setUserData()
-				router.push(url || "/login")
+				router.push(url || "/")
 			})
 	}
 
 	useEffect(() => {
 		const unsubscribe = onAuthStateChanged(auth, (currentuser) => {
 			if (currentuser) {
-				console.log(currentuser)
 				const unsub = onSnapshot(doc(db, "users", currentuser.uid), (doc) => {
 					if (doc.data()) {
 						setUser(currentuser)
 						setUserData(doc.data())
+						if (!doc.data().restrict) {
+							if (router.pathname.includes('restrict')) {
+								router.push('/')
+							} else if (router.pathname.includes('login') || router.pathname.includes('verify')) {
+								return
+							} else {
+								return
+							}
+						} else {
+							router.push("/restrict")
+						}
 						if (doc.data().primaryEdu != undefined && doc.data().firstname && doc.data().lastname && doc.data().mobileno && doc.data().branch && doc.data().gender) {
 							setProfileCompleted(true)
 						} else {
-							// setMessage("Please Complete your profile")
 							setProfileCompleted(false)
 						}
 					} else {
@@ -43,7 +53,11 @@ export function UserAuthContextProvider({ children, setMessage }) {
 					}
 				});
 			} else {
-				router.push(`/login`)
+				if (router.pathname.includes("verify")) {
+					return
+				} else {
+					router.push(`/`)
+				}
 			}
 		});
 		return () => {
@@ -90,25 +104,27 @@ export function UserAuthContextProvider({ children, setMessage }) {
 	const YEAR_OPTIONS = [
 		{
 			label: "First Year",
-			value: "First Year"
+			value: 1
 		},
 		{
 			label: "Second Year",
-			value: "Second Year"
+			value: 2
 		},
 		{
 			label: "Third Year",
-			value: "Third Year"
+			value: 3
 		},
 		{
 			label: "Fourth Year",
-			value: "Fourth Year"
+			value: 4
 		}
 	]
 
-
+	const fetchData = (item) => {
+		return { id: item.id, ...item.data() }
+	}
 	return (
-		<userAuthContext.Provider value={{ user, setUser, userData, setUserData, logOut, YEAR_OPTIONS, BRANCH_OPTIONS, GENDER_OPTIONS }}>
+		<userAuthContext.Provider value={{ showNotice, setShowNotice, user, setUser, userData, setUserData, logOut, YEAR_OPTIONS, BRANCH_OPTIONS, GENDER_OPTIONS, fetchData }}>
 			{children}
 		</userAuthContext.Provider>
 	)

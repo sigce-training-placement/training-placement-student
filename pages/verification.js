@@ -16,7 +16,9 @@ const Verification = () => {
 	return (
 		<>
 			{/* <Layout title={"Verification"}> */}
-			<button onClick={handleverification}>Click</button>
+			<div className='custom-bg-color-no-auth h-screen w-screen flex justify-center items-center'>
+				<button onClick={handleverification}>Click</button>
+			</div>
 			{/* </Layout> */}
 		</>
 	)

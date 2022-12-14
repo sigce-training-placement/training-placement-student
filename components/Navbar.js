@@ -1,116 +1,76 @@
 import Link from 'next/link'
 import React, { useEffect, useState } from 'react'
 import { useUserAuth } from '../context/auth'
+import { useUserData } from '../context/data'
 import Button from './Button'
+import { useRouter } from 'next/router'
+import { HiOutlineViewGridAdd, HiOutlineClipboardCheck } from 'react-icons/hi'
+import { BiUserVoice, BiBuildings } from 'react-icons/bi'
+import { MdOutlineContactPage } from 'react-icons/md'
+import { IoHelpOutline } from 'react-icons/io5'
 
 const Navbar = () => {
+	const dashboard = <HiOutlineViewGridAdd />
+	const placement = <BiUserVoice />
+	const training = <HiOutlineClipboardCheck />
+	const profile = <MdOutlineContactPage />
+	const company = <BiBuildings />
+	const Help = <IoHelpOutline />
 	const { logOut, userData, user } = useUserAuth()
 	const [routes, setRoutes] = useState([])
-	useEffect(() => {
-		if (userData) {
-			userData.role === "student" ? setRoutes(STUDENT_ROUTES) : userData.role === "company" ? setRoutes(COMPANY_ROUTES) : userData.role === "admin" ? setRoutes(ADMIN_ROUTES) : setRoutes(NO_USER_ROUTES)
-		}
-	}, [userData]);
-
-	const NO_USER_ROUTES = [
-		{
-			label: 'Student',
-			url: '/student/login'
-		},
-		{
-			label: 'Admin',
-			url: '/admin/login'
-		},
-		{
-			label: 'Company',
-			url: '/company/login'
-		}
-	]
+	const router = useRouter()
 	const STUDENT_ROUTES = [
 		{
-			label: 'Home',
-			url: '/student'
-		},
-		{
-			label: 'Academics',
-			url: '/student/academics'
-		},
-		{
-			label: 'Update Profile',
-			url: '/student/update-profile'
-		},
-		{
-			label: 'Club',
-			url: '/student/club'
-		},
-		{
-			label: 'Training',
-			url: '/student/training'
-		},
-		{
-			label: 'Internship',
-			url: '/student/internship'
-		},
-		{
-			label: 'Achievement',
-			url: '/student/achievement'
-		}
-	]
-	const COMPANY_ROUTES = [
-		{
-			label: 'Update Profile c',
-			url: '/student/update-profile'
-		},
-		{
-			label: 'Club',
-			url: '/admin/club'
-		},
-		{
-			label: 'Training',
-			url: '/company/training'
-		},
-		{
-			label: 'Internship',
-			url: '/company/internship'
-		},
-		{
-			label: 'Achievement',
-			url: '/company/achievement'
-		}
-	]
-	const ADMIN_ROUTES = [
-		{
-			label: 'Students',
-			url: '/admin/student/'
-		},
-		{
-			label: 'Company',
-			url: '/admin/company/'
-		},
-		{
-			label: 'Training',
-			url: '/company/training'
+			label: 'Dashboard',
+			url: '/dashboard',
+			icon: dashboard
 		},
 		{
 			label: 'Drive',
-			url: '/company/drives'
+			url: '/drive',
+			icon: placement
 		},
 		{
-			label: 'Achievement',
-			url: '/company/achievement'
-		}
+			label: 'Training',
+			url: '/training',
+			icon: training
+		},
+		{
+			label: 'Profile',
+			url: '/profile',
+			icon: profile
+		},
+		{
+			label: 'Help',
+			url: '/help',
+			icon: Help
+		},
 	]
 	return (
 		<>
-			<nav className={user && user.emailVerified ? 'bg-white fixed top-0 left-0 h-screen py-5 px-3 shadow-xl w-2/12 flex flex-col items-center z-0' : "hidden"}>
-				{/* <img src="/assets/sigce.png" className='h-12 mr-20' alt="" /> */}
-				{
-					routes.map((route) => {
-						return <Link className='p-2 bg-indigo-600 hover:bg-indigo-400 duration-200 rounded-lg w-10/12 text-white font-semibold text-center my-2' key={route.url} href={route.url}><p>{route.label}</p></Link>
-					})
-				}
-				<Button text={"Logout"} handler={logOut} />
-			</nav>
+			{<div className='absolute bottom-10 h-64 w-64 left-10 rounded-full bg-indigo-400 blur-3xl opacity-70'></div>}
+			{userData && !userData.restrict && <nav className={user && user.emailVerified ? 'pb-10 fixed top-0 left-0 h-screen py-5 w-[17vw] flex flex-col items-center justify-between z-0 border-r overflow-hidden backdrop-blur-3xl' : "hidden"} >
+				<div className='w-full'>
+					<h1 className='text-center text-lg font-semibold mb-10'>Training & Placement</h1>
+					{
+						STUDENT_ROUTES.map((route) => {
+							if (route.url === router.asPath || router.pathname.includes(route.url)) {
+								return <Link className='text-left border-l-4 border-indigo-600 py-3 duration-200 w-full text-indigo-600 font-semibold flex items-center hover:bg-indigo-100' key={route.url} href={route.url}><div className='h-8 w-16 flex justify-center items-center'>{route.icon}</div><p>{route.label}</p></Link>
+							} else {
+								return <Link className='border-l-4 border-transparent hover:border-indigo-400 w-full text-left py-3 duration-200  text-gray-600 font-semibold flex items-center hover:bg-indigo-100' key={route.url} href={route.url}><div className='h-8 w-16 flex justify-center items-center'>{route.icon}</div><p>{route.label}</p></Link>
+							}
+						})
+					}
+				</div>
+
+				<div className='w-full flex flex-col mb-10'>
+					<div className='flex items-center px-6 gap-x-3 justify-center'>
+						<img src="/assets/sigce.png" className='h-12 w-12 rounded-full bg-white border' alt="" />
+						<span className='text-gray-600 font-semibold whitespace-nowrap overflow-hidden text-ellipsis'>{userData && userData.firstname} {userData && userData.lastname}</span>
+					</div>
+					<button onClick={logOut} className='font-semibold w-max m-auto mt-5 bg-white rounded-lg px-4 py-2 text-indigo-500'>Logout</button>
+				</div>
+			</nav>}
 		</>
 	)
 }

@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react'
-import Layout from '../../components/Layout'
-import { useUserAuth } from '../../context/auth'
-import Input from '../../components/Input'
+import Layout from '../components/Layout'
+import { useUserAuth } from '../context/auth'
+import Input from '../components/Input'
 import { doc, updateDoc } from 'firebase/firestore'
-import { db } from '../../context/firebase_config'
-import Button from "../../components/Button";
+import { db } from '../context/firebase_config'
+import Button from "../components/Button";
 
 const Academics = ({ setMessage }) => {
 	const { user, userData } = useUserAuth()
