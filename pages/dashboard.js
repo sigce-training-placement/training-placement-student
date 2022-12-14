@@ -11,7 +11,7 @@ const Dashboard = ({ getDate }) => {
 	const { driveArr } = useUserData()
 	return (
 		<Layout title="Dashboard" navbar={true}>
-			<div className='py-12 px-10'>
+			<div className='pt-12 px-10'>
 				<div className='flex items-center justify-between mb-8'>
 					<h1 className='text-3xl font-bold'>Dashboard</h1>
 					<span className='text-indigo-500 h-10 w-10 flex items-center justify-center bg-indigo-500 bg-opacity-10 hover:bg-opacity-20 duration-150 cursor-pointer rounded-md'><BiBell /></span>
